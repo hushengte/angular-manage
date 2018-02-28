@@ -1,0 +1,27 @@
+{
+  "name": "angular-bootstrap-manage",
+  "version": "1.0.0",
+  "description": "Management component based on angularjs and bootstrap",
+  "keywords": [
+    "angular",
+    "bootstrap",
+    "manage"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hushengte/angular-manage.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/hushengte/angular-manage",
+  "author": "Ted Smith",
+  "devDependencies": {
+    "bower-nexus3-resolver": "*",
+    "gulp": "^3.9.0",
+    "gulp-angular-templatecache": "^2.0.0",
+    "gulp-clean-css": "^2.0.13",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^5.0.0",
+    "gulp-uglify": "^2.0.0",
+    "main-bower-files": "^2.13.1"
+  }
+}

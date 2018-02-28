@@ -1,1 +1,3 @@
-# angular-manage
+# install
+npm install
+bower install

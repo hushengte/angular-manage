@@ -1,0 +1,139 @@
+<form class="form-horizontal" name="editForm" role="form" ng-submit="ok($event)">
+	<div class="modal-header">
+        <button type="button" class="close" ng-click="cancel()">&times;</button>
+        <h4 class="modal-title">{{config.title}}</h4>
+    </div>
+    <div class="modal-body">
+    	<div ng-repeat="field in config.fields" ng-if="field.editable == null || field.editable" class="form-group">
+            <label class="{{config.labelClasses == null ? 'col-md-3' : config.labelClasses}} control-label">{{field.title}}:</label>
+            <div ng-if="field.type == 'text'" class="col-md-7">
+            	<input class="form-control" type="text" name="{{field.name}}" placeholder="{{field.placeholder}}" ng-model="model[field.name]"
+            		ng-required="field.required" ng-maxlength="field.maxlength" ng-pattern="field.pattern"/>
+            	<div ng-if="field.maxlength > 0" ng-show="editForm[field.name].$invalid">
+            		<span ng-show="editForm[field.name].$error.maxlength" class="text-danger">最多输入{{field.maxlength}}个字符</span>
+	            </div>
+            </div>
+            <div ng-if="field.type == 'radio'" class="col-md-9">
+            	<label class="radio-inline" ng-repeat="item in field.items">
+            		<input type="radio" ng-value="item.value" ng-model="model[field.name]"> {{item.name}}
+            	</label>
+            </div>
+            <div ng-if="field.type == 'integer'" class="col-md-3">
+            	<input class="form-control" type="number" name="{{field.name}}" ng-model="model[field.name]" 
+            		ng-required="field.required" ng-min="field.min" ng-max="field.max" ng-pattern="/^(-|\+)?\d+$/"/>
+            </div>
+            <div ng-if="field.type == 'number'" class="col-md-3">
+            	<input class="form-control" type="number" name="{{field.name}}" ng-model="model[field.name]" 
+            		ng-required="field.required" ng-min="field.min" ng-max="field.max" ng-pattern="/^(-|\+)?\d+(\.[0-9]{1,2})?$/" step="0.01"/>
+            </div>
+            <div ng-if="field.type == 'date'" class="col-md-4">
+            	<p class="input-group">
+            		<input type="text" class="form-control" datetime-picker="yyyy-MM-dd" enable-time="false" ng-model="model[field.name]" 
+            			datepicker-options="field.options" is-open="field.options.isOpen" read-as="true" save-as="true" ng-focus="field.options.isOpen = true" 
+            			datepicker-append-to-body="true" placeholder="{{field.placeholder}}" ng-readonly="true" ng-required="field.required"/>
+		            <span class="input-group-btn">
+		                <button type="button" class="btn btn-default" ng-click="field.options.isOpen = !field.options.isOpen">
+		                <i class="fa fa-calendar"></i></button>
+		            </span>
+            	</p>
+            </div>
+            <div ng-if="field.type == 'datetime'" class="col-md-5">
+            	<p class="input-group">
+            		<input type="text" class="form-control" datetime-picker="{{field.format != null ? field.format : 'yyyy-MM-dd HH:mm:ss'}}" enable-time="true" 
+            			datepicker-options="field.options" is-open="field.options.isOpen" read-as="true" save-as="true" ng-focus="field.options.isOpen = true" 
+            			datepicker-append-to-body="true" placeholder="{{field.placeholder}}" ng-readonly="true" ng-required="field.required" ng-model="model[field.name]"/>
+		            <span class="input-group-btn">
+		                <button type="button" class="btn btn-default" ng-click="field.options.isOpen = !field.options.isOpen">
+		                <i class="fa fa-calendar"></i></button>
+		            </span>
+            	</p>
+            </div>
+            <div ng-if="field.type == 'time'" class="col-md-5">
+            	<p class="input-group">
+            		<input type="text" class="form-control" datetime-picker="HH:mm" enable-date="false" 
+            			timepicker-options="field.options" is-open="field.options.isOpen" read-as="true" save-as="true" ng-focus="field.options.isOpen = true" 
+            			timepicker-append-to-body="true" placeholder="{{field.placeholder}}" ng-readonly="true" ng-required="field.required" ng-model="model[field.name]"/>
+		            <span class="input-group-btn">
+		                <button type="button" class="btn btn-default" ng-click="field.options.isOpen = !field.options.isOpen">
+		                <i class="fa fa-clock-o"></i></button>
+		            </span>
+            	</p>
+            </div>
+            <div ng-if="field.type == 'select'" class="{{field.classes != null ? field.classes : 'col-md-3'}}">
+            	<ui-select ng-model="model[field.name]" theme="bootstrap" ng-required="field.required" on-select="field.onSelect($item, model, config.fields)">
+		        	<ui-select-match placeholder="{{field.placeholder != null ? field.placeholder : '请选择'}}">{{$select.selected.value}}</ui-select-match>
+		        	<ui-select-choices repeat="item.key as item in field.options | filter: $select.search" 
+		        		refresh="selectRefresh($select.search, field)" refresh-delay="{{field.refreshDelay != null ? field.refreshDelay : 0}}">
+		       			<div ng-bind-html="item.value | highlight: $select.search"></div>
+		            </ui-select-choices>
+		        </ui-select>
+            </div>
+            <div ng-if="field.type == 'multiselect'" class="col-md-7">
+            	<ui-select multiple ng-model="model[field.name]" theme="bootstrap" ng-required="field.required" limit="{{field.limit}}">
+		        	<ui-select-match placeholder="{{field.placeholder != null ? field.placeholder : '请选择'}}">{{$item.value}}</ui-select-match>
+		        	<ui-select-choices repeat="item.key as item in field.options | filter: $select.search"
+		        		refresh="selectRefresh($select.search, field)" refresh-delay="{{field.refreshDelay != null ? field.refreshDelay : 0}}">
+		       			<div ng-bind-html="item.value | highlight: $select.search"></div>
+		            </ui-select-choices>
+		        </ui-select>
+            </div>
+            <div ng-if="field.type == 'email'" class="col-md-6">
+            	<input class="form-control" type="email" name="{{field.name}}" placeholder="{{field.placeholder}}" ng-model="model[field.name]"
+            		ng-required="field.required" ng-maxlength="field.maxlength"/>
+            	<div ng-if="field.maxlength > 0" ng-show="editForm[field.name].$invalid">
+            		<span ng-show="editForm[field.name].$error.maxlength" class="text-danger">最多输入{{field.maxlength}}个字符</span>
+	            </div>
+            </div>
+            <div ng-if="field.type == 'password'" class="col-md-6">
+            	<input class="form-control" type="password" name="{{field.name}}" placeholder="{{field.placeholder}}" ng-model="model[field.name]"
+            		ng-required="field.required" ng-maxlength="field.maxlength"/>
+            	<div ng-if="field.maxlength > 0" ng-show="editForm[field.name].$invalid">
+            		<span ng-show="editForm[field.name].$error.maxlength" class="text-danger">最多输入{{field.maxlength}}个字符</span>
+	            </div>
+            </div>
+            <div ng-if="field.type == 'file'" class="col-md-7">
+            	<input class="form-control" type="file" ng-model="model[field.name]" ng-required="field.required" 
+            		ngf-select="upload(field, $files)" ngf-multiple="field.multiple" ngf-max-size="{{field.maxSize != null ? field.maxSize : '128MB'}}"/><br/>
+            </div>
+            <div ng-if="field.type == 'textarea'" class="col-md-7">
+            	<textarea class="form-control" rows="{{field.rows != null ? field.rows : '3'}}" name="{{field.name}}" placeholder="{{field.placeholder}}"
+            		ng-model="model[field.name]" ng-required="field.required" ng-maxlength="field.maxlength" ng-trim="true"></textarea>
+            </div>
+           	<div ng-if="field.type == 'dynamic'" class="col-md-9">
+           		<div class="form-group" ng-repeat="item in model[field.name]">
+           			<div ng-repeat="itemField in field.items" class="{{itemField.classes != null ? itemField.classes : 'col-md-3'}}">
+	            		<ui-select ng-if="itemField.type == 'select'" ng-model="item[itemField.name]" theme="bootstrap" ng-required="itemField.required">
+				        	<ui-select-match placeholder="{{itemField.placeholder != null ? itemField.placeholder : '请选择'}}">{{$select.selected.value}}</ui-select-match>
+				        	<ui-select-choices repeat="kv.key as kv in itemField.options | filter: $select.search"
+				        		refresh="selectRefresh($select.search, itemField)" refresh-delay="{{itemField.refreshDelay != null ? itemField.refreshDelay : 0}}">
+				       			<div ng-bind-html="kv.value | highlight: $select.search"></div>
+				            </ui-select-choices>
+				        </ui-select>
+				        <ui-select ng-if="itemField.type == 'multiselect'" multiple ng-model="item[itemField.name]" theme="bootstrap" 
+				        	ng-required="itemField.required" limit="{{itemField.limit}}">
+				        	<ui-select-match placeholder="{{itemField.placeholder != null ? itemField.placeholder : '请选择'}}">{{$item.value}}</ui-select-match>
+				        	<ui-select-choices repeat="kv.key as kv in itemField.options | filter: $select.search"
+				        		refresh="selectRefresh($select.search, itemField)" refresh-delay="{{itemField.refreshDelay != null ? itemField.refreshDelay : 0}}">
+				       			<div ng-bind-html="kv.value | highlight: $select.search"></div>
+				            </ui-select-choices>
+				        </ui-select>
+	            	</div>
+	            	<button ng-if="$index == 0" class="btn btn-success btn-xs" ng-click="$event.preventDefault(); model[field.name].push(createItem(field))">
+	                    <i class="fa fa-plus-circle"></i>
+	                </button>
+	                <button ng-if="$index == 0 && model[field.name].length > 1" class="btn btn-danger btn-xs" ng-click="$event.preventDefault(); model[field.name].pop()">
+	                    <i class="fa fa-remove"></i>
+	                </button>
+           		</div>
+           	</div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="cancel()">
+            <i class="fa fa-close"></i> 取消
+        </button>
+        <button type="submit" class="btn btn-primary" ng-disabled="editForm.$invalid">
+            <i class="fa fa-save"></i> 提交
+        </button>
+    </div>
+</form>

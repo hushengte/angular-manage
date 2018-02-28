@@ -1,0 +1,56 @@
+{
+  "name": "angular-bootstrap-manage",
+  "version": "1.0.0",
+  "homepage": "https://github.com/hushengte/angular-manage",
+  "authors": [
+    "Ted Smith"
+  ],
+  "description": "A management component based on angularjs and bootstrap",
+  "main": [
+    "dist/js/angular-bootstrap-manage-tpls.js",
+    "dist/css/angular-bootstrap-manage.css"
+  ],
+  "keywords": [
+    "AngularJS",
+    "Angular",
+    "Bootstrap",
+    "Manage"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "test",
+    "src/**/*.js",
+    ".github",
+    "docs",
+    "index.html"
+  ],
+  "dependencies": {
+    "font-awesome": "fontawesome#^v4.7.0",
+    "jquery": "^3.2.1",
+    "bootstrap": "v3.3.7",
+    "angular": "^v1.5.8",
+    "angular-ui-router": "^0.3.1",
+    "angular-loading-bar": "^0.8.0",
+    "angular-animate": "^v1.5.8",
+    "angular-bootstrap": "^2.2.0",
+    "angular-local-storage": "^v0.5.2",
+    "bootstrap-ui-datetime-picker": "^2.4.3",
+    "angular-ui-select": "^v0.19.6",
+    "ng-file-upload": "^11.2.3",
+    "angular-sanitize": "^v1.2.16",
+    "angular-cookies": "^v1.5.8"
+  },
+  "overrides": {
+    "font-awesome": {
+      "main": "css/font-awesome.css"
+    },
+    "bootstrap": {
+      "main": [
+        "dist/js/bootstrap.js",
+        "dist/css/bootstrap.css"
+      ]
+    }
+  }
+}

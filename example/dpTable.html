@@ -1,0 +1,193 @@
+<div class="content {{config.contentClasses != null ? config.contentClasses : 'col-md-12'}}">
+	<div class="row">
+		<div class="col-md-4" ng-if="config.searchable">
+			<form role="form" ng-submit="search($event)">
+			    <div class="input-group">
+			    	<div ng-if="config.search.field != null" class="input-group-btn">
+				    	<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			                {{config.search.field.item.value}} <span class="caret"></span>
+			            </button>
+			            <ul class="dropdown-menu">
+			            	<li ng-repeat="searchField in config.search.field.items"><a href="#" ng-click="selectItem('field', searchField)">{{searchField.value}}</a></li>
+			            </ul>
+		            </div>
+			        <input class="form-control" type="text" ng-model="input.keyword"/>
+			        <div class="input-group-btn">
+			            <button class="btn btn-default" type="submit">
+			                <i class="fa fa-search"></i>
+			            </button>
+			        </div>
+			    </div>
+			</form>
+		</div>
+		<div ng-if="config.search.option != null" class="col-md-2">
+			<ui-select ng-model="input.option" theme="bootstrap" on-select="selectItem('option', $item)">
+	        	<ui-select-match placeholder="{{config.search.option.placeholder}}">{{$select.selected.value}}</ui-select-match>
+	        	<ui-select-choices repeat="item.key as item in config.search.option.items | filter: $select.search">
+	       			<div ng-bind-html="item.value | highlight: $select.search"></div>
+	            </ui-select-choices>
+	        </ui-select>
+		</div>
+		<div ng-if="config.search.startDate != null" class="col-md-2">
+			<div class="input-group">
+          		<input type="text" class="form-control" datetime-picker="yyyy-MM-dd" enable-time="false" ng-model="input.startDate" 
+          			datepicker-options="config.search.startDate.options" is-open="config.search.startDate.options.open"
+          			ng-focus="config.search.startDate.options.open = true" placeholder="{{config.search.startDate.placeholder}}"
+          			datepicker-append-to-body="true" read-as="true" save-as="true" ng-readonly="true"/>
+	            <span class="input-group-btn">
+	                <button type="button" class="btn btn-default" ng-click="config.search.startDate.options.open = !config.search.startDate.options.open">
+	                <i class="fa fa-calendar"></i></button>
+	            </span>
+          	</div>
+		</div>
+	    <div ng-if="config.search.endDate != null" class="col-md-2">
+	    	<div class="input-group">
+          		<input type="text" class="form-control" datetime-picker="yyyy-MM-dd" enable-time="false" ng-model="input.endDate" 
+          			datepicker-options="config.search.endDate.options" is-open="config.search.endDate.options.open"
+          			ng-focus="config.search.endDate.options.open = true" placeholder="{{config.search.endDate.placeholder}}"
+          			datepicker-append-to-body="true" read-as="true" save-as="true" ng-readonly="true"/>
+	            <span class="input-group-btn">
+	                <button type="button" class="btn btn-default" ng-click="config.search.endDate.options.open = !config.search.endDate.options.open">
+	                <i class="fa fa-calendar"></i></button>
+	            </span>
+	        </div>
+	    </div>
+	    <button ng-if="config.action.refresh" class="btn btn-default btn-sm" title="刷新" ng-click="search()"><i class="fa fa-refresh"></i></button>
+		<button ng-if="config.action.create" class="btn btn-primary btn-sm" ng-click="editModal(config, null)"><i class="fa fa-plus-circle"></i> 新建</button>
+	    <button ng-if="config.action.remove" class="btn btn-danger btn-sm" ng-click="removeBtnClick()"><i class="fa fa-remove"></i> 删除</button>
+	    <span ng-repeat="buttonEntry in config.action.buttons">
+	    	<button class="btn {{buttonEntry.classes}} btn-sm" ng-click="actionBtnClick(buttonEntry)">
+		        <i class="{{buttonEntry.iconClasses}}"></i> {{buttonEntry.text}}
+		    </button>
+	    </span>
+		<div class="btn-group" ng-repeat="dropdownEntry in config.action.dropdowns">
+			<button type="button" class="btn {{dropdownEntry.classes}} btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		        <i class="{{dropdownEntry.iconClasses}}"></i> {{dropdownEntry.text}}<span class="caret"></span>
+		    </button>
+		  	<ul class="dropdown-menu">
+		    	<li ng-repeat="dropdownItem in dropdownEntry.items"><a href="#" ng-click="dropdownItemClick(dropdownItem)">{{dropdownItem.title}}</a></li>
+		 	</ul>
+		</div>
+	</div>
+	<br/>
+	<p ng-if="entries.length == 0" class="text-warning">暂无数据</p>
+	<table ng-if="entries.length > 0" class="table table-condensed table-striped table-hover">
+		<thead>
+		    <tr>
+		    	<th>#{{config.entity.name}}: </th>
+		        <th ng-repeat="column in config.columns" ng-if="!column.hidden" class="{{column.classes}}" width="{{column.width}}">{{column.title}}</th>
+		        <!-- 
+		        <th ng-if="config.actionColumns.length > 0" class="{{config.actionColumnClasses}}">{{config.actionColumnsTitle}}</th>
+		         -->
+		    </tr>
+	    </thead>
+	    <tbody ng-if="config.childTable == null">
+		    <tr ng-repeat-start="entry in entries">
+		        <td><input type="checkbox" ng-value="entry.id" ng-click="entry.isSelected = !entry.isSelected"/></td>
+		        <td ng-repeat="column in config.columns" ng-if="!column.hidden">
+		        	<span ng-if="column.kind == null && column.render == null">{{column.parse(entry)}}</span>
+		        	<span ng-if="column.kind == null && column.render != null" ng-bind-html="columnRender(column, entry)"></span>
+		        	<span ng-if="column.kind == 'click'">
+		        		<a ng-if="column.render == null" href="" ng-click="columnClick(column, entry)">{{column.parse(entry)}}</a>
+		        		<span ng-if="column.render != null" ng-bind-html="columnRender(column, entry)"></span>
+		        	</span>
+		        	<span ng-if="column.kind == 'action'" ng-repeat="actionItem in column.items">
+				    	<button ng-if="actionItem.hidden == null || (actionItem.hidden != null && !actionItem.hidden(entry, input))" 
+				    		class="btn {{actionItem.classes}} btn-xs" title="{{actionItem.title}}" ng-click="actionColumnBtnClick(actionItem, entry)">
+				    		<i class="{{actionItem.iconClasses}}"></i>
+				    	</button>
+				    </span>
+		        </td>
+		    </tr>
+		    <tr ng-if="entry.showChildTable" ng-repeat-end>
+		        <td colspan="{{config.childTable.colspan}}">
+		        	<p ng-if="entry.children.length == 0" class="text-warning">暂无数据</p>
+		            <table ng-if="entry.children.length > 0" class="table table-condensed table-striped table-hover">
+		            	<thead>
+						    <tr>
+						    	<th>#{{config.childTable.entity.name}}: </th>
+						        <th ng-repeat="childColumn in config.childTable.columns" ng-if="!childColumn.hidden" class="{{childColumn.classes}}" 
+						        	width="{{childColumn.width}}">{{childColumn.title}}</th>
+						        	<!-- 
+						        <th ng-if="config.childTable.actionColumns.length > 0" class="{{config.childTable.actionColumnClasses}}">
+						        	{{config.childTable.actionColumnsTitle}}</th> -->
+						    </tr>
+					    </thead>
+					    <tbody>
+						    <tr ng-repeat="childEntry in entry.children">
+						        <td>{{$index + 1}}</td>
+						        <td ng-repeat="childColumn in config.childTable.columns" ng-if="!childColumn.hidden">
+						        	<span ng-if="childColumn.kind == null && childColumn.render == null">{{childColumn.parse(childEntry)}}</span>
+						        	<span ng-if="childColumn.kind == null && childColumn.render != null" ng-bind-html="columnRender(childColumn, childEntry)"></span>
+						        	<span ng-if="column.kind == 'action'" ng-repeat="childActionColumnItem in childColumn.items">
+								    	<button class="btn {{childActionColumnItem.classes}} btn-xs" title="{{childActionColumnItem.title}}" 
+								    		ng-click="childActionColumnBtnClick(childActionColumnItem, childEntry, entry)">
+								    		<i class="{{childActionColumnItem.iconClasses}}"></i>
+								    	</button>
+								    </span>
+						        </td>
+						    </tr>
+					    </tbody>
+		            </table>
+		        </td>
+		    </tr>
+	    </tbody>
+	    <!-- 
+	    <tbody ng-if="config.childTable != null" ng-repeat="entry in entries">
+	    	<tr>
+		        <td><input type="checkbox" ng-value="entry.id" ng-click="entry.isSelected = !entry.isSelected"/></td>
+		        <td ng-repeat="column in config.columns" ng-if="!column.hidden">
+		        	<span ng-if="$index == 0"><a href="" ng-click="parentTitleClick(entry)">{{column.parse(entry)}}</a></span>
+		        	<span ng-if="column.render != null && $index == 0" ng-bind-html="column.render(entry)"></span>
+		        	<span ng-if="column.render == null && $index != 0">{{column.parse(entry)}}</span>
+		        	<span ng-if="column.render != null && $index != 0" ng-bind-html="column.render(entry)"></span>
+		        </td>
+		        <td>
+		        	<span ng-repeat="actionColumn in config.actionColumns">
+				    	<button ng-if="actionColumn.condition == null || (actionColumn.condition != null && actionColumn.condition(entry))" 
+				    		class="btn {{actionColumn.classes}} btn-xs" title="{{actionColumn.title}}" ng-click="actionColumnBtnClick(actionColumn, entry)">
+				    		<i class="{{actionColumn.iconClasses}}"></i>
+				    	</button>
+				    </span>
+		        </td>
+		    </tr>
+		    <tr ng-if="entry.showChildTable">
+		        <td colspan="{{config.childTable.colspan}}">
+		        	<p ng-if="entry.children.length == 0" class="text-warning">暂无数据</p>
+		            <table ng-if="entry.children.length > 0" class="table table-condensed table-striped table-hover">
+		            	<thead>
+						    <tr>
+						    	<th>#</th>
+						        <th ng-repeat="childColumn in config.childTable.columns" ng-if="!childColumn.hidden" class="{{childColumn.classes}}" 
+						        	width="{{childColumn.width}}">{{childColumn.title}}</th>
+						        <th ng-if="config.childTable.actionColumns.length > 0" class="{{config.childTable.actionColumnClasses}}">
+						        	{{config.childTable.actionColumnsTitle}}</th>
+						    </tr>
+					    </thead>
+					    <tbody>
+						    <tr ng-repeat="childEntry in entry.children track by childEntry.id">
+						        <td>{{$index + 1}}</td>
+						        <td ng-repeat="childColumn in config.childTable.columns" ng-if="!childColumn.hidden">
+						        	<span ng-if="childColumn.render == null">{{childColumn.parse(childEntry)}}</span>
+						        	<span ng-if="childColumn.render != null" ng-bind-html="childColumn.render(childEntry)"></span>
+						        </td>
+						        <td>
+						        	<span ng-repeat="childActionColumn in config.childTable.actionColumns">
+								    	<button class="btn {{childActionColumn.classes}} btn-xs" title="{{childActionColumn.title}}" 
+								    		ng-click="childActionColumnBtnClick(childActionColumn, childEntry, entry)">
+								    		<i class="{{childActionColumn.iconClasses}}"></i>
+								    	</button>
+								    </span>
+						        </td>
+						    </tr>
+					    </tbody>
+		            </table>
+		        </td>
+		    </tr>
+	    </tbody>
+	</table>
+	 -->
+	<ul uib-pagination ng-if="totalCount > 0" class="pagination-sm" style="margin-bottom:0px;" ng-model="currentPage" ng-change="selectPage(currentPage)"
+	   	boundary-links="true" total-items="totalCount" items-per-page="10" max-size="5" rotate="true"
+	   	first-text="&laquo;" previous-text="&lsaquo;" next-text="&rsaquo;" last-text="&raquo;"></ul>
+</div>

@@ -1,0 +1,104 @@
+.schedule-head-part {
+	width: 60px;
+  	text-align: center;
+  	float: left;
+}
+.schedule-head-column {
+  width: 150px;
+  text-align: center;
+  float: left;
+}
+
+.schedule-box {
+  text-wrap: none;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+}
+.schedule-box .schedule-day-part {
+  height: 20px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-bottom: thin dashed #e1e1e1;
+}
+.schedule-box .schedule-day-part .schedule-day-part-label {
+  width: 60px;
+  text-align: center;
+  float: left;
+}
+.schedule-box .schedule-day-part-selected {
+  	background-color: dodgerblue;
+}
+.schedule-box .schedule-day-part .cal-day-hour-part-spacer {
+  height: 20px;
+  display: inline-block;
+}
+.schedule-box .schedule-day-part:hover {
+  background-color: #ededed;
+}
+.schedule-box .schedule-day .day-highlight {
+  height: 20px;
+}
+.schedule-box .event-label {
+  font-weight: bold;
+  font-size: 12px;
+}
+.schedule-box .schedule-day:nth-child(odd) {
+  background-color: #fafafa;
+}
+.schedule-box .schedule-panel {
+  position: relative;
+  padding-left: 60px;
+  border: solid 1px #e1e1e1;
+}
+.schedule-box .schedule-panel-head {
+	position: absolute;
+  	width: 100%;
+  	margin-left: -60px;
+}
+.schedule-box .schedule-panel-body {
+  position: absolute;
+  width: 100%;
+  margin-left: -60px;
+}
+.schedule-box .day-event {
+  position: absolute;
+  width: 150px;
+  overflow: hidden;
+  padding: 2px 3px !important;
+}
+.schedule-box .day-event a {
+  font-size: 12px;
+  text-overflow: ellipsis;
+}
+.schedule-box .day-highlight {
+  padding-top: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border: 1px solid #c3c3c3;
+  margin: 1px 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.schedule-box .day-highlight.dh-event-important {
+  border: 1px solid #ad2121;
+}
+.schedule-box .day-highlight.dh-event-warning {
+  border: 1px solid #e3bc08;
+}
+.schedule-box .day-highlight.dh-event-info {
+  border: 1px solid dodgerblue;
+}
+.schedule-box .day-highlight.dh-event-inverse {
+  border: 1px solid #1b1b1b;
+}
+.schedule-box .day-highlight.dh-event-success {
+  border: 1px solid darkgreen;
+}
+.schedule-box .day-highlight.dh-event-special {
+  background-color: #ffe6ff;
+  border: 1px solid #800080;
+}
